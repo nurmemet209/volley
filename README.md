@@ -1,7 +1,22 @@
-#持续更新
-
-
 #Volley源码阅读
+
+1. 请求优先级
+2. 请求缓存
+3. 请求重试
+4. 线程池
+5. 不适合文件下载
+6. 内存池
+
+Volley框架代码量不多不算太复杂，主要是Volley类的newRequestQueue方法中初始化并启动NetworkDispatcher线程池和CacheDispatcher,
+然后不断的向RequestQuee中添加请求，添加请求的时候先查看正在执行的请求队列里面有没有该请求如果没有先加入到缓存请求队列，
+先由CacheDispatcher判断有没有缓存或者有没有缓存过期等等，如果需要网上获取那再放回到mNetworkQueue当中由NetworkDispatcher请求数据
+如果需要缓存那缓存到本地，再交给ResponseDelivery处理，然后由ResponseDelivery分发给用户。其他 StringRequest，JsonObjectRequest，
+JsonArrayRequest，ImageRequest。。。等等都是对NetworkResponse解析出来之后对data的包装，还有一个类ImageLoader是负责图片下载的，不过对，对图片的缓存得自己实现，还有NetworkImageView是一个图片控件，但是不支持众多正在加载效果，图片的圆角等一些特性，而且Volley把
+Response一次性读取到内存，这样图片太大会导致内存崩溃，所以Volley不适合图片下载，适合小而频繁的请求。下面代码我只是分析了一半，再往下感觉也没多少东西，也都差不多，也就不往下分析了。读后感：读源码永远是学习的最好的方法没有之一。
+
+
+
+
 
 * 主要是解析缓存相关的http头部信息
 ```java
@@ -2754,3 +2769,5 @@ public class Volley {
 }
 
 ```
+
+
